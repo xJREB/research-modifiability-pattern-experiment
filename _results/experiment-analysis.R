@@ -1,7 +1,5 @@
 ########################################################################
 # Experiment Results Evaluation
-# 2018-07-19
-# xJREB
 ########################################################################
 
 # Delete current environment variables --------
@@ -14,6 +12,16 @@ library(tidyr)
 library(corrplot)
 library(Hmisc)
 library(DescTools)
+library(exactRankTests)
+
+# Helper function to visually and statistically check the distribution of a data set
+checkDataDistribution <- function(data){
+  hist(data)
+  # Shapiro-Wilk test for normal distribution
+  # Null hypothesis with Shapiro-Wilk test is that "data" came from a normally distributed population,
+  # i.e. p-value <= 0.05 --> "data" is not normally distributed
+  shapiro.test(data)
+}
 
 # Read data ------------
 data <- read.csv("data.csv")
@@ -22,7 +30,7 @@ summary(data)
 
 # Transform data to a better format for ggplot
 dataDuration <- data %>%
-  # only use participants with effectiveness >= 66%
+  # Only use participants with effectiveness >= 66%
   # filter(!is.na(ex2Duration)) %>%
   select(pId, version, ex1Duration, ex2Duration, ex3Duration) %>% 
   gather(key = "exercise", value = "duration", ex1Duration, ex2Duration, ex3Duration) %>% 
@@ -37,13 +45,13 @@ dataDuration <- data %>%
 
 groupComparison <- 
   data %>%
-  # only use participants with effectiveness >= 66%
+  # Only use participants with effectiveness >= 66%
   # filter(!is.na(ex2Duration)) %>%
   group_by(version) %>% 
   summarise(
     numParticipants = n(),
     avgSemester = mean(semester),
-    # percentage of participants that attended the introductory presentation
+    # Percentage of participants that attended the introductory presentation
     introAttendance = mean(intro),
     # AVG self-reported difficulty for exercise1 (1-10)
     avgDiffEx1 = mean(diff.ex1, na.rm = TRUE),
@@ -84,22 +92,159 @@ groupComparison <-
   )
 groupComparison$avgDuration <- aggregate(duration ~ version, dataDuration, mean)$duration
 
-# --> groups are roughly equal w.r.t. skill/experience and effectiveness
-# minor differences:
+# --> Groups are roughly equal w.r.t. skill/experience and effectiveness
+# Minor differences:
 # - ~14% more attended the intro for version 1
-# - version 2 participants had ~ half a year more programming experience
-# - version 2 participants had ~ 0.7 points more in self-reported skill/experience (1-10)
+# - Version 2 participants had ~ half a year more programming experience
+# - Version 2 participants had ~ 0.7 points more in self-reported skill/experience (1-10)
 
 
-# Duration analysis (efficiency) ------
+# Analysis of effectiveness and efficiency ------
 
+trimPercent = 0.0   # optionally cut off the best and worst x percent
+
+# Create distinct data sets to analyze the distribution
+
+# Effectiveness groups:
+effectivenes_group1 = data %>%
+  filter(version == 1) %>%
+  select(effectiveness) %>% 
+  Trim(trim = trimPercent, na.rm = TRUE)
+
+effectivenes_group2 = data %>% 
+  filter(version == 2) %>%
+  select(effectiveness) %>% 
+  Trim(trim = trimPercent, na.rm = TRUE)
+
+exNum = c(1,2,3)    # select exercises
+
+# Efficiency groups:
+efficiency_group1 = dataDuration %>%
+  filter(version == 1) %>%
+  filter(exercise %in% exNum) %>%
+  select(duration) %>% 
+  Trim(trim = trimPercent, na.rm = TRUE)
+
+efficiency_group2 = dataDuration %>% 
+  filter(version == 2) %>%
+  filter(exercise %in% exNum) %>%
+  select(duration) %>% 
+  Trim(trim = trimPercent, na.rm = TRUE)
+
+# Check distribution of all data sets
+checkDataDistribution(effectivenes_group1)
+checkDataDistribution(effectivenes_group2)
+checkDataDistribution(efficiency_group1)
+checkDataDistribution(efficiency_group2)
+
+# --> All data sets are NOT normally distributed (all p-values << 0.05), i.e. t-test cannot be used
+# Instead, a non-parametric test for non-normality is needed
+# --> Wilcoxon–Mann–Whitney test is used 
+# Alternative: Kolmogorov–Smirnov test
+
+
+# Test for effectiveness
+# Hypothesis: effectiveness of pattern version #2 is greater than for the non-pattern version #1
+
+# Calculate Wilcoxon–Mann–Whitney test
+# Standard implementation from the `stats` package (asymptotic approximation with ties)
+wilcox.test(
+  x = effectivenes_group2,
+  y = effectivenes_group1,
+  alternative = "greater",
+  conf.level = 0.99
+)
+# --> p-value: 0.5939
+
+# Calculate Exact Wilcoxon–Mann–Whitney test
+# Implementation that adjusts for ties (package: `exactRankTests`, differences are only very small though)
+wilcox.exact(
+  x = effectivenes_group2,
+  y = effectivenes_group1,
+  alternative = "greater",
+  conf.level = 0.99
+)
+# --> p-value: 0.5903
+
+# Calculate Kolmogorov–Smirnov test
+ks.test(
+  x = effectivenes_group1,
+  y = effectivenes_group2,
+  alternative = "greater",
+  conf.level = 0.99
+)
+# --> p-value: 0.6663
+
+# Conclusion:
+# --> no significant p for in all test variants
+# --> null hypothesis ("means are similar") cannot be rejected
+ 
+
+# Test for efficiency
+# Hypotheses: exercise durations for pattern version #2 are less than for the non-pattern version #1
+
+# Calculate Wilcoxon–Mann–Whitney test
+# Standard implementation from the `stats` package is sufficient (no ties)
+wilcox.test(
+  x = efficiency_group2,
+  y = efficiency_group1,
+  alternative = "less",
+  conf.level = 0.99
+)
+# All exercises at once (exNum = c(1,2,3)):
+# --> no significant p: 0.0496 (this is barely below 0.05, but with Bonferroni correction, we need p <= 0.01)
+# Exercises 1 and 2 together (exNum = c(1,2)):
+# --> no significant p: 0.4018
+# Exercises 1 and 3 together (exNum = c(1,3)):
+# --> no significant p: 0.1291
+# Exercises 2 and 3 together (exNum = c(2,3)):
+# --> highly significant p: 0.0009678
+# Only exercise 1 (exNum = c(1)):
+# --> no significant p: 0.741
+# Only exercise 2 (exNum = c(2)):
+# --> no significant p: 0.08194
+# Only exercise 3 (exNum = c(3)):
+# --> highly significant p: 0.000617
+
+
+# Calculate Kolmogorov–Smirnov test
+ks.test(
+  x = efficiency_group1,
+  y = efficiency_group2,
+  alternative = "less",
+  conf.level = 0.99
+)
+# All exercises at once (exNum = c(1,2,3)):
+# --> no significant p: 0.09141
+# Exercises 1 and 2 together (exNum = c(1,2)):
+# --> no significant p: 0.4426
+# Exercises 1 and 3 together (exNum = c(1,3)):
+# --> no significant p: 0.2733
+# Exercises 2 and 3 together (exNum = c(2,3)):
+# --> highly significant p: 0.00262
+# Only exercise 1 (exNum = c(1)):
+# --> no significant p: 0.952
+# Only exercise 2 (exNum = c(2)):
+# --> no significant p: 0.2084
+# Only exercise 3 (exNum = c(3)):
+# --> highly significant p: 0.005141
+
+# Conclusion:
+# --> both tests only show a significant p-value (<= 0.01) in the case of
+#     - exercise 3 alone
+#     - exercise 2 and 3 combined
+# in all other cases, the null hypotheses cannot be rejected
+
+
+# Create box plot to visually compare duration of versions
+
+# Create tooltips
 meanValueToolTips <- dataDuration %>% 
   mutate(exercise = factor(exercise, levels = c(1,2,3), labels = c("#1: Process Abstraction", "#2: Service Facade", "#3: Event-Driven Messaging"))) %>% 
   group_by(version, exercise) %>% 
   select(version, exercise, duration) %>% 
   summarise(duration = round(mean(duration, na.rm = TRUE)))
-
-# Create box plot to compare duration of versions
+# Draw the plot
 dataDuration %>%
   mutate(version = factor(version, levels = c(1,2), labels = c("#1 (no patterns)", "#2 (patterns)"))) %>%
   mutate(exercise = factor(exercise, levels = c(1,2,3), labels = c("#1: Process Abstraction", "#2: Service Facade", "#3: Event-Driven Messaging"))) %>% 
@@ -111,71 +256,33 @@ dataDuration %>%
   geom_text(data = meanValueToolTips, aes(label = duration), nudge_x = -0.45)
 
 
-# Calculate t-tests for mean effectiveness difference between versions
-trimPercent = 0.0 # cut off the best and worst x percent
-t.test(
-  x = data %>%
-    filter(version == 1) %>%
-    select(effectiveness) %>% 
-    Trim(trim = trimPercent, na.rm = TRUE),
-  y = data %>% 
-    filter(version == 2) %>%
-    select(effectiveness) %>% 
-    Trim(trim = trimPercent, na.rm = TRUE),
-  var.equal = FALSE,
-  conf.level = 0.99
-)
-
-# --> no significant p for all exercises at once (exNum = c(1,2,3)): 0.309
-# --> highly significant p for exercises 2 and 3 together (exNum = c(2,3)): 0.004
-# --> no significant p for ex 1 (exNum = c(1)): 0.442
-# --> no significant p for ex 2 (exNum = c(2)): 0.119
-# --> highly significant p for ex 3 (exNum = c(3)): 0.008  
-
-# Calculate t-tests for mean duration difference between versions per exercise
-exNum = c(1,2,3) # select exercises
-trimPercent = 0.0 # cut off the best and worst x percent
-t.test(
-  x = dataDuration %>%
-    filter(version == 1) %>%
-    filter(exercise %in% exNum) %>%
-    select(duration) %>% 
-    Trim(trim = trimPercent, na.rm = TRUE),
-  y = dataDuration %>% 
-    filter(version == 2) %>%
-    filter(exercise %in% exNum) %>%
-    select(duration) %>% 
-    Trim(trim = trimPercent, na.rm = TRUE),
-  var.equal = FALSE,
-  conf.level = 0.99
-)
-
-# --> no significant p for all exercises at once (exNum = c(1,2,3)): 0.309
-# --> highly significant p for exercises 2 and 3 together (exNum = c(2,3)): 0.004
-# --> no significant p for ex 1 (exNum = c(1)): 0.442
-# --> no significant p for ex 2 (exNum = c(2)): 0.119
-# --> highly significant p for ex 3 (exNum = c(3)): 0.008
-
-
 # Calculate correlation between version and duration
-exNum = c(1,2,3) # select exercises
+exNum = c(1,2,3)        # select exercises
+# Kendall's Tau: more permissive w.r.t. assumptions (e.g. does not require monotonicity), less sensitive to ties
+corr_mthd = "kendall"
 dataDuration %>%
   filter(exercise %in% exNum) %>%
   mutate(exercise = as.integer(exercise)) %>% 
   summarise(
-    correlation = cor.test(version, duration, method = "spearman", exact = FALSE)$estimate,
-    p.value = cor.test(version, duration, method = "spearman", exact = FALSE)$p.value
+    correlation = cor.test(version, duration, method = corr_mthd, exact = FALSE)$estimate,
+    p.value = cor.test(version, duration, method = corr_mthd, exact = FALSE)$p.value
   )
-# --> no significant correlation for all exercises at once (r = -0.174, p = 0.098)
-# --> highly significant medium correlation for exercises 2 and 3 together (r = -0.469, p = 0.002)
-# --> no significant correlation for ex 1 (r = 0.094, p = 0.527) and ex 2 (r = -0.285, p = 0.157)
-# --> highly significant strong correlation for ex 3 (r = -0.756, p = 0.0004)
+# --> no significant correlation for all exercises at once (corr = -0.143, p = 0.098)
+# --> no significant correlation for exercises 1 and 2 together (corr = -0.024, p = 0.798)
+# --> no significant correlation for exercises 1 and 3 together (corr = -0.117, p = 0.253)
+# --> significant medium correlation for exercises 2 and 3 together (corr = -0.387, p = 0.0024)
+# --> no significant correlation for exercise 1 alone (corr = 0.077, p = 0.521)
+# --> no significant correlation for exercise 2 alone (corr = -0.237, p = 0.153)
+# --> significant strong correlation for exercise 3 alone (corr = -0.635, p = 0.0025)
+
+# --> similar to the tests: correlations are only significant for exercise 3 alone and exercises 2 and 3 combined
 
 
 # Correlation matrix for exploration --------
 
 # "pearson" for linear correlation of continuous variables
 # "spearman" for rank-based monotonic correlation (with ordinal variables)
+# Unfortunately, `rcorr` does not support Kendall's Tau
 corr_mthd = "spearman"
 corrMatrix <- 
   data %>% select(-study) %>% 
@@ -193,6 +300,8 @@ effectivenessCorrelationComparison <-
   data %>%
   group_by(version) %>% 
   summarise(
+    corr.intro = cor.test(effectiveness, intro, method = corr_mthd, exact = FALSE)$estimate,
+    p.intro = cor.test(effectiveness, intro, method = corr_mthd, exact = FALSE)$p.value,
     corr.patterns = cor.test(effectiveness, expert.patterns, method = corr_mthd, exact = FALSE)$estimate,
     p.patterns = cor.test(effectiveness, expert.patterns, method = corr_mthd, exact = FALSE)$p.value,
     corr.spatterns = cor.test(effectiveness, expert.spatterns, method = corr_mthd, exact = FALSE)$estimate,
@@ -207,10 +316,8 @@ effectivenessCorrelationComparison <-
     p.web = cor.test(effectiveness, expert.web, method = corr_mthd, exact = FALSE)$p.value
   )
 
-# --> for group 2, skill and experience with patterns, service-based patterns, and Java was stronger correlated with effectiveness
+# --> for group 2, experience with patterns, service-based patterns, and Java was stronger correlated with effectiveness
 # --> years of programming was correlated roughly equal in both groups
-
-
 
   
   
