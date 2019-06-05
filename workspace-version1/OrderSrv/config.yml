@@ -1,0 +1,16 @@
+server:
+  applicationConnectors:
+  - type: http
+    port: 8030
+  adminConnectors:
+  - type: http
+    port: 8031
+
+jerseyClient:
+  timeout: 10s
+  connectionTimeout: 10s
+
+logging:
+  level: INFO
+  loggers:
+    patternexperiment: DEBUG

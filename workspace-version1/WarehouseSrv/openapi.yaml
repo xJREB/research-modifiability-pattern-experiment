@@ -1,0 +1,74 @@
+openapi: 3.0.1
+paths:
+  /products/{id}/availability:
+    get:
+      operationId: checkProductAvailability
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            $ref: "#/components/schemas/LongParam"
+        - name: amount
+          in: query
+          schema:
+            $ref: "#/components/schemas/IntParam"
+      responses:
+        default:
+          description: default response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProductAvailabilityCheckResponse"
+    put:
+      operationId: updateProductAvailability
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            $ref: "#/components/schemas/LongParam"
+        - name: amount
+          in: query
+          schema:
+            $ref: "#/components/schemas/IntParam"
+      responses:
+        default:
+          description: default response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BaseResponse"
+components:
+  schemas:
+    BaseResponse:
+      required:
+        - message
+        - status
+        - statusCode
+      type: object
+      properties:
+        status:
+          type: string
+        statusCode:
+          type: integer
+          format: int32
+        message:
+          type: string
+    IntParam:
+      type: object
+    LongParam:
+      type: object
+    ProductAvailabilityCheckResponse:
+      type: object
+      properties:
+        productId:
+          minimum: 1
+          type: integer
+          format: int64
+        available:
+          type: boolean
+        requestedAmount:
+          minimum: 1
+          type: integer
+          format: int32

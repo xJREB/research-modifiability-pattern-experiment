@@ -1,0 +1,12 @@
+cd ../CategorySrv/
+mvn sonar:sonar
+cd ../CustomerSrv/
+mvn sonar:sonar
+cd ../NotificationSrv/
+mvn sonar:sonar
+cd ../OrderSrv/
+mvn sonar:sonar
+cd ../ProductSrv/
+mvn sonar:sonar
+cd ../WarehouseSrv/
+mvn sonar:sonar

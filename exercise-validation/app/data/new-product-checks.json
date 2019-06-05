@@ -1,0 +1,17 @@
+[{
+    "id": "Create new Product - Test 1",
+    "config": {
+        "method": "post",
+        "url": "http://localhost:8050/products",
+        "data": {
+            "name": "FancyNewProduct1337",
+            "categoryId": 1337,
+            "price": 1337
+        }
+    },
+    "successful": {
+        "expected": true,
+        "achieved": false
+    },
+    "message": "Should create a new product, add it to the new products DB, sent a new products mail, and stock up 10 available copies"
+}]

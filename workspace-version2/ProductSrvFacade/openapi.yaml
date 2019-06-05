@@ -1,0 +1,277 @@
+openapi: 3.0.1
+paths:
+  /categories:
+    get:
+      operationId: getCategories
+      parameters:
+        - name: limit
+          in: query
+          schema:
+            $ref: "#/components/schemas/IntParam"
+      responses:
+        default:
+          description: default response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ProductCategory"
+    post:
+      operationId: createCategory
+      requestBody:
+        content:
+          "*/*":
+            schema:
+              $ref: "#/components/schemas/ProductCategory"
+        required: true
+      responses:
+        default:
+          description: default response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BaseResponse"
+  /categories/{id}:
+    get:
+      operationId: getCategoryById
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            $ref: "#/components/schemas/LongParam"
+      responses:
+        default:
+          description: default response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProductCategory"
+    put:
+      operationId: updateCategory
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            $ref: "#/components/schemas/LongParam"
+      requestBody:
+        content:
+          "*/*":
+            schema:
+              $ref: "#/components/schemas/ProductCategory"
+        required: true
+      responses:
+        default:
+          description: default response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BaseResponse"
+    delete:
+      operationId: deleteCategory
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            $ref: "#/components/schemas/LongParam"
+      responses:
+        default:
+          description: default response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BaseResponse"
+  /products:
+    get:
+      operationId: getProducts
+      parameters:
+        - name: limit
+          in: query
+          schema:
+            $ref: "#/components/schemas/IntParam"
+      responses:
+        default:
+          description: default response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Product"
+    post:
+      operationId: createProduct
+      requestBody:
+        content:
+          "*/*":
+            schema:
+              $ref: "#/components/schemas/Product"
+        required: true
+      responses:
+        default:
+          description: default response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BaseResponse"
+  /products/{id}:
+    get:
+      operationId: getProductById
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            $ref: "#/components/schemas/LongParam"
+      responses:
+        default:
+          description: default response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Product"
+    put:
+      operationId: updateProduct
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            $ref: "#/components/schemas/LongParam"
+      requestBody:
+        content:
+          "*/*":
+            schema:
+              $ref: "#/components/schemas/Product"
+        required: true
+      responses:
+        default:
+          description: default response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BaseResponse"
+    delete:
+      operationId: deleteProduct
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            $ref: "#/components/schemas/LongParam"
+      responses:
+        default:
+          description: default response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BaseResponse"
+  /products/{id}/availability:
+    get:
+      operationId: checkProductAvailability
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            $ref: "#/components/schemas/LongParam"
+        - name: amount
+          in: query
+          schema:
+            $ref: "#/components/schemas/IntParam"
+      responses:
+        default:
+          description: default response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProductAvailabilityCheckResponse"
+    put:
+      operationId: updateProductAvailability
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            $ref: "#/components/schemas/LongParam"
+        - name: amount
+          in: query
+          schema:
+            $ref: "#/components/schemas/IntParam"
+      responses:
+        default:
+          description: default response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BaseResponse"
+components:
+  schemas:
+    BaseResponse:
+      required:
+        - message
+        - status
+        - statusCode
+      type: object
+      properties:
+        status:
+          type: string
+        statusCode:
+          type: integer
+          format: int32
+        message:
+          type: string
+    IntParam:
+      type: object
+    ProductCategory:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        name:
+          type: string
+        parentCategoryId:
+          minimum: 0
+          type: integer
+          format: int64
+        tags:
+          type: array
+          items:
+            type: string
+    LongParam:
+      type: object
+    Product:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        name:
+          type: string
+        categoryId:
+          minimum: 1
+          type: integer
+          format: int64
+        price:
+          minimum: 0.01
+          exclusiveMinimum: false
+          type: number
+          format: double
+    ProductAvailabilityCheckResponse:
+      type: object
+      properties:
+        productId:
+          minimum: 1
+          type: integer
+          format: int64
+        availableAmount:
+          minimum: 0
+          type: integer
+          format: int32
+        requestedAmount:
+          minimum: 1
+          type: integer
+          format: int32

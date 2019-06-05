@@ -1,0 +1,26 @@
+#main {
+    padding: 15px;
+}
+
+.container {
+    max-width: 1920px;
+}
+
+li input {
+    width: 70px !important;
+}
+
+li button {
+    width: 150px !important;
+    padding: 0px !important;
+}
+
+img {
+    height: 20px;
+    width: 20px;
+}
+
+li blockquote {
+    display: inline;
+    margin-left: 3px;
+}

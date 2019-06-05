@@ -1,0 +1,210 @@
+[{
+        "id": "ProductSrv - GET products",
+        "config": {
+            "method": "get",
+            "url": "http://localhost:8050/products?limit=4000"
+        },
+        "successful": {
+            "expected": true,
+            "achieved": false
+        },
+        "message": "Should successfully fetch all products"
+    },
+    {
+        "id": "ProductSrv - GET product",
+        "config": {
+            "method": "get",
+            "url": "http://localhost:8050/products/1"
+        },
+        "successful": {
+            "expected": true,
+            "achieved": false
+        },
+        "message": "Should successfully fetch a single product"
+    },
+    {
+        "id": "ProductSrv - POST product",
+        "config": {
+            "method": "post",
+            "url": "http://localhost:8050/products",
+            "data": {
+                "name": "NewProduct1337",
+                "categoryId": 1,
+                "price": 1337
+            }
+        },
+        "successful": {
+            "expected": true,
+            "achieved": false
+        },
+        "message": "Should successfully create a new product"
+    },
+    {
+        "id": "ProductSrv - Check availability",
+        "config": {
+            "method": "get",
+            "url": "http://localhost:8050/products/1/availability"
+        },
+        "successful": {
+            "expected": false,
+            "achieved": false
+        },
+        "message": "Should fail to check product availability"
+    },
+    {
+        "id": "ProductSrv - Set availability",
+        "config": {
+            "method": "put",
+            "url": "http://localhost:8050/products/1337/availability?amount=10"
+        },
+        "successful": {
+            "expected": false,
+            "achieved": false
+        },
+        "message": "Should fail to set product availability"
+    },
+    {
+        "id": "ProductSrv - GET categories",
+        "config": {
+            "method": "get",
+            "url": "http://localhost:8050/categories?limit=4000"
+        },
+        "successful": {
+            "expected": false,
+            "achieved": false
+        },
+        "message": "Should fail to fetch categories"
+    },
+    {
+        "id": "ProductSrv - GET category",
+        "config": {
+            "method": "get",
+            "url": "http://localhost:8050/categories/1"
+        },
+        "successful": {
+            "expected": false,
+            "achieved": false
+        },
+        "message": "Should fail to fetch a single category"
+    },
+    {
+        "id": "ProductSrv - POST category",
+        "config": {
+            "method": "post",
+            "url": "http://localhost:8050/categories",
+            "data": {
+                "name": "NewCategory1337",
+                "parentCategoryId": 0,
+                "tags": ["newTag"]
+            }
+        },
+        "successful": {
+            "expected": false,
+            "achieved": false
+        },
+        "message": "Should fail to create a new category"
+    },
+    {
+        "id": "WarehouseSrv - Check availability",
+        "config": {
+            "method": "get",
+            "url": "http://localhost:8070/products/1/availability"
+        },
+        "successful": {
+            "expected": true,
+            "achieved": false
+        },
+        "message": "Should successfully check product availability"
+    },
+    {
+        "id": "WarehouseSrv - Set availability",
+        "config": {
+            "method": "put",
+            "url": "http://localhost:8070/products/1337/availability?amount=10"
+        },
+        "successful": {
+            "expected": true,
+            "achieved": false
+        },
+        "message": "Should successfully set product availability"
+    },
+    {
+        "id": "CategorySrv - GET categories",
+        "config": {
+            "method": "get",
+            "url": "http://localhost:8060/categories?limit=4000"
+        },
+        "successful": {
+            "expected": true,
+            "achieved": false
+        },
+        "message": "Should successfully fetch categories"
+    },
+    {
+        "id": "CategorySrv - GET category",
+        "config": {
+            "method": "get",
+            "url": "http://localhost:8060/categories/1"
+        },
+        "successful": {
+            "expected": true,
+            "achieved": false
+        },
+        "message": "Should successfully fetch a single category"
+    },
+    {
+        "id": "CategorySrv - POST category",
+        "config": {
+            "method": "post",
+            "url": "http://localhost:8060/categories",
+            "data": {
+                "name": "NewCategory1337",
+                "parentCategoryId": 0,
+                "tags": ["newTag"]
+            }
+        },
+        "successful": {
+            "expected": true,
+            "achieved": false
+        },
+        "message": "Should successfully create a new category"
+    },
+    {
+        "id": "Ordering - Accept",
+        "config": {
+            "method": "post",
+            "url": "order",
+            "data": {
+                "customerId": 6,
+                "items": [{
+                    "productId": 1,
+                    "amount": 1
+                }]
+            }
+        },
+        "successful": {
+            "expected": true,
+            "achieved": false
+        },
+        "message": "Should successfully create a new order"
+    },
+    {
+        "id": "Ordering - Reject",
+        "config": {
+            "method": "post",
+            "url": "order",
+            "data": {
+                "customerId": 6,
+                "items": [{
+                    "productId": 1,
+                    "amount": 10
+                }]
+            }
+        },
+        "successful": {
+            "expected": false,
+            "achieved": false
+        },
+        "message": "Should fail to create a new order"
+    }
+]

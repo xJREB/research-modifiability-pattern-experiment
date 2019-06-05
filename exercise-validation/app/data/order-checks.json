@@ -1,0 +1,158 @@
+[{
+        "id": "Customer6, 3xProduct1",
+        "order": {
+            "customerId": 6,
+            "items": [{
+                "productId": 1,
+                "amount": 3
+            }]
+        },
+        "successful": {
+            "expected": true,
+            "achieved": false
+        },
+        "message": "Product Availability: Order should be accepted; marketing mail should be sent"
+    },
+    {
+        "id": "Customer6, 4xProduct1",
+        "order": {
+            "customerId": 6,
+            "items": [{
+                "productId": 1,
+                "amount": 4
+            }]
+        },
+        "successful": {
+            "expected": false,
+            "achieved": false
+        },
+        "message": "Product Availability: Order should be rejected"
+    },
+    {
+        "id": "Customer6, 2xProduct2",
+        "order": {
+            "customerId": 6,
+            "items": [{
+                "productId": 2,
+                "amount": 2
+            }]
+        },
+        "successful": {
+            "expected": true,
+            "achieved": false
+        },
+        "message": "Product Availability: Order should be accepted; marketing mail should be sent"
+    }, {
+        "id": "Customer6, 3xProduct2",
+        "order": {
+            "customerId": 6,
+            "items": [{
+                "productId": 2,
+                "amount": 3
+            }]
+        },
+        "successful": {
+            "expected": false,
+            "achieved": false
+        },
+        "message": "Product Availability: Order should be rejected"
+    }, {
+        "id": "Customer6, 1xProduct3",
+        "order": {
+            "customerId": 6,
+            "items": [{
+                "productId": 3,
+                "amount": 1
+            }]
+        },
+        "successful": {
+            "expected": true,
+            "achieved": false
+        },
+        "message": "Product Availability: Order should be accepted; marketing mail should be sent"
+    }, {
+        "id": "Customer6, 2xProduct3",
+        "order": {
+            "customerId": 6,
+            "items": [{
+                "productId": 3,
+                "amount": 2
+            }]
+        },
+        "successful": {
+            "expected": false,
+            "achieved": false
+        },
+        "message": "Product Availability: Order should be rejected"
+    }, {
+        "id": "Customer1, 1xProduct1",
+        "order": {
+            "customerId": 1,
+            "items": [{
+                "productId": 1,
+                "amount": 1
+            }]
+        },
+        "successful": {
+            "expected": false,
+            "achieved": false
+        },
+        "message": "Credit Rating: Order should be rejected"
+    }, {
+        "id": "Customer2, 1xProduct1",
+        "order": {
+            "customerId": 2,
+            "items": [{
+                "productId": 1,
+                "amount": 1
+            }]
+        },
+        "successful": {
+            "expected": false,
+            "achieved": false
+        },
+        "message": "Credit Rating: Order should be rejected"
+    }, {
+        "id": "Customer3, 1xProduct1",
+        "order": {
+            "customerId": 3,
+            "items": [{
+                "productId": 1,
+                "amount": 1
+            }]
+        },
+        "successful": {
+            "expected": true,
+            "achieved": false
+        },
+        "message": "Credit Rating: Order should be accepted; marketing mail should be sent"
+    }, {
+        "id": "Customer4, 1xProduct1",
+        "order": {
+            "customerId": 4,
+            "items": [{
+                "productId": 1,
+                "amount": 1
+            }]
+        },
+        "successful": {
+            "expected": true,
+            "achieved": false
+        },
+        "message": "Credit Rating: Order should be accepted; marketing mail should be sent"
+    }, {
+        "id": "Customer5, 1xProduct1",
+        "order": {
+            "customerId": 5,
+            "items": [{
+                "productId": 1,
+                "amount": 1
+            }]
+        },
+        "successful": {
+            "expected": true,
+            "achieved": false
+        },
+        "message": "Credit Rating: Order should be accepted; marketing mail should be sent"
+    }
+]

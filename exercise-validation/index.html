@@ -1,0 +1,120 @@
+<!doctype html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <title>Exercise Validation</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=Roboto">
+    <link rel="stylesheet" href="node_modules/milligram/dist/milligram.min.css">
+    <link rel="stylesheet" href="app/main.css">
+
+    <script src="node_modules/axios/dist/axios.js"></script>
+    <script src="node_modules/vue/dist/vue.js"></script>
+    <script src="node_modules/vue-router/dist/vue-router.js"></script>
+</head>
+
+<body>
+    <div id="main">
+        <router-link class="button back-button" to="/">Startpage</router-link>
+        <router-view></router-view>
+    </div>
+
+    <script type="text/x-template" id="results-component">
+        <div>
+            <pre class="message-field" v-if="test.message!==''">{{test.message}}</pre>
+            <div v-if="test.validationFinished">
+                <h2 class="test-headings" v-bind:class="{fail: hasFailed(test.results)}">{{test.title}}</h2>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Test</th>
+                            <th>Goal</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr v-for="(result, index) in test.results" v-bind:key="index">
+                            <td>{{result[test.idKey]}}</td>
+                            <td>{{result.message}}</td>
+                            <td>
+                                {{result.successful.expected === result.successful.achieved}}
+                                <img v-if="result.successful.expected === result.successful.achieved" class="status-icon" src="app/img/success.png">
+                                <img v-if="result.successful.expected !== result.successful.achieved" class="status-icon" src="app/img/fail.png">
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </script>
+
+    <script type="text/x-template" id="startpage">
+        <div>
+            <h1>Exercise Validation</h1>
+            <hr>
+            <router-link class="button button-outline" to="/exercise01">Exercise 01</router-link>
+            <router-link class="button button-outline" to="/exercise02">Exercise 02</router-link>
+            <router-link class="button button-outline" to="/exercise03">Exercise 03</router-link>
+        </div>
+    </script>
+
+    <script type="text/x-template" id="exercise01">
+        <div>
+            <h1>Validation of Exercise 01</h1>
+            <hr>
+            <button v-on:click="startValidation">Start Validation</button>
+            <hr>
+            <div class="container">
+                <div class="row">
+                    <div class="column">
+                        <test-results v-bind:test="test"></test-results>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </script>
+
+    <script type="text/x-template" id="exercise02">
+        <div>
+            <h1>Validation of Exercise 02</h1>
+            <hr>
+            <blockquote>
+                <p>
+                    <strong>Additional manual validation necessary:</strong> Check if the Web UI (http://localhost:5000) is displaying
+                    the product categories and if it is possible to check the availability of products with ID 1 to 5.
+                </p>
+            </blockquote>
+            <button v-on:click="startValidation">Start Validation</button>
+            <hr>
+            <div class="container">
+                <div class="row">
+                    <div class="column">
+                        <test-results v-bind:test="test"></test-results>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </script>
+
+    <script type="text/x-template" id="exercise03">
+        <div>
+            <h1>Validation of Exercise 03</h1>
+            <hr>
+            <button v-on:click="startValidation">Start Validation</button>
+            <hr>
+            <div class="container">
+                <div class="row">
+                    <div class="column">
+                        <test-results v-bind:test="test"></test-results>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </script>
+
+    <script src="app/main.js"></script>
+</body>
+
+</html>

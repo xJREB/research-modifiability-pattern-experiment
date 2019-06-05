@@ -1,0 +1,20 @@
+{
+  "name": "webui",
+  "version": "1.0.0",
+  "description": "Web frontend to interact with the services",
+  "private": true,
+  "main": "index.html",
+  "scripts": {
+    "start": "serve -p 5000"
+  },
+  "author": "Justus Bogner <justus.bogner@gmail.com>",
+  "license": "MIT",
+  "dependencies": {
+    "axios": "^0.18.0",
+    "milligram": "^1.3.0",
+    "vue": "^2.6.10"
+  },
+  "devDependencies": {
+    "serve": "^11.0.0"
+  }
+}

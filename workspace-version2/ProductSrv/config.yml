@@ -1,0 +1,14 @@
+defaultCategoryId: 1
+
+server:
+  applicationConnectors:
+  - type: http 
+    port: 8050
+  adminConnectors:
+  - type: http
+    port: 8051
+
+logging:
+  level: INFO
+  loggers:
+    patternexperiment: DEBUG

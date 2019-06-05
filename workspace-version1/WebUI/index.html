@@ -1,0 +1,82 @@
+<!doctype html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <title>WebShop UI</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=Roboto">
+    <link rel="stylesheet" href="node_modules/milligram/dist/milligram.min.css">
+    <link rel="stylesheet" href="app/main.css">
+
+    <script src="node_modules/axios/dist/axios.min.js"></script>
+    <script src="node_modules/vue/dist/vue.js"></script>
+</head>
+
+<body>
+    <div id="main">
+        <h1>WebShop UI</h1>
+        <div class="container">
+            <div class="row">
+                <div class="column">
+                    <h2>Products</h2>
+                    <ul>
+                        <li v-for="(product, index) in products" v-bind:key="product.id">
+                            {{JSON.stringify(product)}}
+                            <br>
+                            <input type="number" min="0" v-model="product.requestedAmount" />
+                            <button class="button button-outline" v-on:click="checkProductAvailability(product, index)">Check availability</button>
+                            <blockquote v-if="product.available !== undefined && product.available">
+                                Product available!
+                                <img src="app/img/success.png">
+                            </blockquote>
+                            <blockquote v-if="product.available !== undefined && !product.available">
+                                Product not available!
+                                <img src="app/img/fail.png">
+                            </blockquote>
+                        </li>
+                    </ul>
+                </div>
+                <div class="column">
+                    <h2>Customers</h2>
+                    <ul>
+                        <li v-for="(customer, index) in customers" v-bind:key="customer.id">
+                            {{JSON.stringify(customer)}}
+                            <br>
+                            <button class="button button-outline" v-on:click="checkCreditRating(customer, index)">Check credit rating</button>
+                            <blockquote v-if="customer.acceptable !== undefined && customer.acceptable">
+                                Rating acceptable!
+                                <img src="app/img/success.png">
+                            </blockquote>
+                            <blockquote v-if="customer.acceptable !== undefined && !customer.acceptable">
+                                Rating not acceptable!
+                                <img src="app/img/fail.png">
+                            </blockquote>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <div class="row">
+                <div class="column">
+                    <h2>Orders</h2>
+                    <ul>
+                        <li v-for="order in orders" v-bind:key="order.id">{{JSON.stringify(order)}}</li>
+                    </ul>
+                </div>
+                <div class="column">
+                    <h2>Categories</h2>
+                    <ul>
+                        <li v-for="category in categories" v-bind:key="category.id">{{JSON.stringify(category)}}</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+    <script src="app/main.js"></script>
+</body>
+
+</html>
