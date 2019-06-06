@@ -92,7 +92,20 @@ groupComparison <-
   )
 groupComparison$avgDuration <- aggregate(duration ~ version, dataDuration, mean)$duration
 
-# --> Groups are roughly equal w.r.t. skill/experience and effectiveness
+# Analyze study program distributions per group
+# Group 1
+data %>%
+  filter(version == 1) %>%
+  select(study) %>%
+  summary
+
+# Group 2
+data %>%
+  filter(version == 2) %>%
+  select(study) %>%
+  summary
+
+# --> Groups are roughly equal w.r.t. study programs, skill/experience, and effectiveness
 # Minor differences:
 # - ~14% more attended the intro for version 1
 # - Version 2 participants had ~ half a year more programming experience
