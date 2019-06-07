@@ -24,7 +24,5 @@
 - Participant ID:
 - System version: 1 || 2
 - Attended introductory presentation: `true` || `false`
-- Age:
-- Gender: `male` || `female` || `other` (free text field) || `prefer not to answer`
 - Course of study:
 - Current semester:
