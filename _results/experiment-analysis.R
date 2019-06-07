@@ -50,47 +50,74 @@ groupComparison <-
   group_by(version) %>% 
   summarise(
     numParticipants = n(),
+    # current semester
     avgSemester = mean(semester),
+    sdSemester = sd(semester),
     # Percentage of participants that attended the introductory presentation
     introAttendance = mean(intro),
-    # AVG self-reported difficulty for exercise1 (1-10)
+    # Self-reported difficulty for exercise1 (1-10)
     avgDiffEx1 = mean(diff.ex1, na.rm = TRUE),
-    # AVG self-reported difficulty for exercise2 (1-10)
+    sdDiffEx1 = sd(diff.ex1, na.rm = TRUE),
+    # Self-reported difficulty for exercise2 (1-10)
     avgDiffEx2 = mean(diff.ex2, na.rm = TRUE),
-    # AVG self-reported difficulty for exercise3 (1-10)
+    sdDiffEx2 = sd(diff.ex2, na.rm = TRUE),
+    # Self-reported difficulty for exercise3 (1-10)
     avgDiffEx3 = mean(diff.ex3, na.rm = TRUE),
+    sdDiffEx3 = sd(diff.ex3, na.rm = TRUE),
     # Combined AVG self-reported difficulty (1-10)
     avgDiff = (avgDiffEx1 + avgDiffEx2 + avgDiffEx3) / 3,
-    # AVG programming experience in years
+    # Programming experience in years
     avgYearsOfProgramming = mean(yearsOfProgramming),
-    # AVG self-reported skill/experience with Java (1-10)
+    sdYearsOfProgramming = sd(yearsOfProgramming),
+    # Self-reported skill/experience with Java (1-10)
     avgJava = mean(expert.java),
-    # AVG self-reported skill/experience with web development (1-10)
+    sdJava = sd(expert.java),
+    # Self-reported skill/experience with web development (1-10)
     avgWeb = mean(expert.web),
-    # AVG self-reported skill/experience with service-based systems (1-10)
+    sdWeb = sd(expert.web),
+    # Self-reported skill/experience with service-based systems (1-10)
     avgSbs = mean(expert.sbs),
-    # AVG self-reported skill/experience with design patterns (1-10)
+    sdSbs = sd(expert.sbs),
+    # Self-reported skill/experience with design patterns (1-10)
     avgPatterns = mean(expert.patterns),
-    # AVG self-reported skill/experience with service-based design patterns (1-10)
+    sdPatterns = sd(expert.patterns),
+    # Self-reported skill/experience with service-based design patterns (1-10)
     avgSpatterns = mean(expert.spatterns),
+    sdSpatterns = sd(expert.spatterns),
     # Combined AVG self-reported skill/experience (1-10)
     avgSkill = (avgJava + avgWeb + avgSbs + avgPatterns + avgSpatterns) / 5,
     # AVG effectiveness in percent for the 3 exercises (0, 1/3, 2/3, 1)
     avgEffectiveness = mean(effectiveness),
+    sdEffectiveness = sd(effectiveness),
     # Number of participants that solved exercise1
     solvedEx1 = sum(!is.na(ex1Duration)),
     # Number of participants that solved exercise2
     solvedEx2 = sum(!is.na(ex2Duration)),
     # Number of participants that solved exercise3
     solvedEx3 = sum(!is.na(ex3Duration)),
-    # AVG duration for exercise1
+    # Duration for exercise1
     avgDurationEx1 = mean(ex1Duration, na.rm = TRUE),
-    # AVG duration for exercise2
+    sdDurationEx1 = sd(ex1Duration, na.rm = TRUE),
+    # Duration for exercise2
     avgDurationEx2 = mean(ex2Duration, na.rm = TRUE),
-    # AVG duration for exercise3
-    avgDurationEx3 = mean(ex3Duration, na.rm = TRUE)
+    sdDurationEx2 = sd(ex2Duration, na.rm = TRUE),
+    # Duration for exercise3
+    avgDurationEx3 = mean(ex3Duration, na.rm = TRUE),
+    sdDurationEx3 = sd(ex3Duration, na.rm = TRUE)
   )
-groupComparison$avgDuration <- aggregate(duration ~ version, dataDuration, mean)$duration
+# Duration per task over all 3 exercises
+groupComparison$avgDurationPerEx <- aggregate(duration ~ version, dataDuration, mean)$duration
+groupComparison$sdDurationPerEx <- aggregate(duration ~ version, dataDuration, sd)$duration
+
+# Duration to complete all 3 exercises (total)
+data %>%
+  filter(!is.na(ex3Duration)) %>% 
+  mutate(totalDuration = ex1Duration + ex2Duration + ex3Duration) %>% 
+  group_by(version) %>% 
+  summarise(
+    avgTotalDuration = mean(totalDuration),
+    sdTotalDuration = sd(totalDuration)
+  )
 
 # Analyze study program distributions per group
 # Group 1
