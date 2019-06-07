@@ -1,8 +1,10 @@
 # Service-Oriented Modifiability Experiment
 
-To provide empirical support for the modifiability of service-based sytems this repo contains two functionally equivalent WebShop systems. The system is implemented in very basic fashion and provides CRUD operations for e.g. `customers`, `products`, or `orders`. For simplicity, no persistence of data is implemented, i.e. after restarting a service all changes to data will be reset.
+To provide empirical support for the modifiability of service-based systems this repo contains two functionally equivalent WebShop systems. The system is implemented in very basic fashion and provides CRUD operations for e.g. `customers`, `products`, or `orders`. For simplicity, no persistence of data is implemented, i.e. after restarting a service all changes to data will be reset.
 
 Several tasks have to be performed on the systems within a certain timeframe. Both effectiveness and efficiency should be measured for each version.
+
+To build and start services and components, several scripts are available (see `_scripts` folder in each workspace). The `.sh` scripts should work for both Linux and Mac and should also work with GitBash or Cygwin on Windows. Alternatively, there is also a folder with `.bat` scripts for the Windows command line (`_scripts/win`).
 
 Prerequisites for the Experiment:
 
