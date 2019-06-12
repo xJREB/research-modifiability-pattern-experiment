@@ -292,8 +292,14 @@ dataDuration %>%
   geom_boxplot(na.rm = TRUE) +
   facet_grid(exercise ~ .) +
   labs(x = "Group / Version", y = "Duration in sec", fill = "Task Number") +
-  theme(axis.text.x = element_text(size=12)) +
-  geom_text(data = meanValueToolTips, aes(label = duration), nudge_x = -0.45)
+  theme(
+    text = element_text(size = 12.6, face = "bold", family = "sans"),
+    axis.title = element_text(size = 18),
+    axis.text.x = element_text(size = 16),
+    legend.title = element_text(size = 18),
+    legend.text = element_text(size = 16)
+  ) +
+  geom_text(data = meanValueToolTips, aes(label = duration), nudge_x = -0.465, size = 4.8)
 
 
 # Calculate correlation between version and duration
