@@ -17,7 +17,7 @@ library(exactRankTests)
 # Helper function to visually and statistically check the distribution of a data set
 checkDataDistribution <- function(data){
   hist(data)
-  # Shapiro-Wilk test for normal distribution
+  # Shapiro-Wilk test for non-normal distribution
   # Null hypothesis with Shapiro-Wilk test is that "data" came from a normally distributed population,
   # i.e. p-value <= 0.05 --> "data" is not normally distributed
   shapiro.test(data)
@@ -86,9 +86,10 @@ groupComparison <-
     sdSpatterns = sd(expert.spatterns),
     # Combined AVG self-reported skill/experience (1-10)
     avgSkill = (avgJava + avgWeb + avgSbs + avgPatterns + avgSpatterns) / 5,
-    # AVG effectiveness in percent for the 3 exercises (0, 1/3, 2/3, 1)
-    avgEffectiveness = mean(effectiveness),
-    sdEffectiveness = sd(effectiveness),
+    # Effectiveness in percent for the 3 exercises (0, 1/3, 2/3, 1)
+    medianEffectiveness = median(effectiveness),
+    q1Effectiveness = quantile(effectiveness)[2],
+    q3Effectiveness = quantile(effectiveness)[4],
     # Number of participants that solved exercise1
     solvedEx1 = sum(!is.na(ex1Duration)),
     # Number of participants that solved exercise2
@@ -180,8 +181,12 @@ checkDataDistribution(efficiency_group2)
 # --> All data sets are NOT normally distributed (all p-values << 0.05), i.e. t-test cannot be used
 # Instead, a non-parametric test for non-normality is needed
 # --> Wilcoxon–Mann–Whitney test is used 
-# Alternative: Kolmogorov–Smirnov test
+# Possible alternative: Kolmogorov–Smirnov test (sensitive to ties and differences in the sample distributions)
 
+# Due to multiple hypotheses, we need a Bonferroni-adjusted significance level
+# --> alpha = desired significance level / number of hypotheses = 0.05 / 5 = 0.01
+alpha = 0.05 / 5
+confLevel = 1 - alpha
 
 # Test for effectiveness
 # Hypothesis: effectiveness of pattern version #2 is greater than for the non-pattern version #1
@@ -192,7 +197,7 @@ wilcox.test(
   x = effectivenes_group2,
   y = effectivenes_group1,
   alternative = "greater",
-  conf.level = 0.99
+  conf.level = confLevel
 )
 # --> p-value: 0.5939
 
@@ -202,22 +207,13 @@ wilcox.exact(
   x = effectivenes_group2,
   y = effectivenes_group1,
   alternative = "greater",
-  conf.level = 0.99
+  conf.level = confLevel
 )
 # --> p-value: 0.5903
 
-# Calculate Kolmogorov–Smirnov test
-ks.test(
-  x = effectivenes_group1,
-  y = effectivenes_group2,
-  alternative = "greater",
-  conf.level = 0.99
-)
-# --> p-value: 0.6663
-
 # Conclusion:
-# --> no significant p for in all test variants
-# --> null hypothesis ("means are similar") cannot be rejected
+# --> no significant p for all test variants
+# --> null hypothesis cannot be rejected
  
 
 # Test for efficiency
@@ -229,7 +225,7 @@ wilcox.test(
   x = efficiency_group2,
   y = efficiency_group1,
   alternative = "less",
-  conf.level = 0.99
+  conf.level = confLevel
 )
 # All exercises at once (exNum = c(1,2,3)):
 # --> no significant p: 0.0496 (this is barely below 0.05, but with Bonferroni correction, we need p <= 0.01)
@@ -247,30 +243,8 @@ wilcox.test(
 # --> highly significant p: 0.000617
 
 
-# Calculate Kolmogorov–Smirnov test
-ks.test(
-  x = efficiency_group1,
-  y = efficiency_group2,
-  alternative = "less",
-  conf.level = 0.99
-)
-# All exercises at once (exNum = c(1,2,3)):
-# --> no significant p: 0.09141
-# Exercises 1 and 2 together (exNum = c(1,2)):
-# --> no significant p: 0.4426
-# Exercises 1 and 3 together (exNum = c(1,3)):
-# --> no significant p: 0.2733
-# Exercises 2 and 3 together (exNum = c(2,3)):
-# --> highly significant p: 0.00262
-# Only exercise 1 (exNum = c(1)):
-# --> no significant p: 0.952
-# Only exercise 2 (exNum = c(2)):
-# --> no significant p: 0.2084
-# Only exercise 3 (exNum = c(3)):
-# --> highly significant p: 0.005141
-
 # Conclusion:
-# --> both tests only show a significant p-value (<= 0.01) in the case of
+# --> Tests only show a significant p-value (<= 0.01) in the case of
 #     - exercise 3 alone
 #     - exercise 2 and 3 combined
 # in all other cases, the null hypotheses cannot be rejected
