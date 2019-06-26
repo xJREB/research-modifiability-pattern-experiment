@@ -13,9 +13,10 @@ library(corrplot)
 library(Hmisc)
 library(DescTools)
 library(exactRankTests)
+library(wmwpow)
 
 # Helper function to visually and statistically check the distribution of a data set
-checkDataDistribution <- function(data){
+checkDataDistribution <- function(data) {
   hist(data)
   # Shapiro-Wilk test for non-normal distribution
   # Null hypothesis with Shapiro-Wilk test is that "data" came from a normally distributed population,
@@ -178,7 +179,7 @@ checkDataDistribution(effectivenes_group2)
 checkDataDistribution(efficiency_group1)
 checkDataDistribution(efficiency_group2)
 
-# --> All data sets are NOT normally distributed (all p-values << 0.05), i.e. t-test cannot be used
+# --> Most data sets are NOT normally distributed (most p-values < 0.05), i.e. a t-test cannot be used
 # Instead, a non-parametric test for non-normality is needed
 # --> Wilcoxon–Mann–Whitney test is used 
 # Possible alternative: Kolmogorov–Smirnov test (sensitive to ties and differences in the sample distributions)
@@ -243,11 +244,28 @@ wilcox.test(
 # --> highly significant p: 0.000617
 
 
+# Testing the statistical power of the significant test (exercise 3 alone) --> make sure to set exNum = c(3) in line 161
+# efficiency_group1 and efficiency_group2 are normally distributed for exercise 3 alone --> specify distribution via mean and sd
+mean(efficiency_group1) # --> 1567.286
+sd(efficiency_group1)   # --> 563.2172
+mean(efficiency_group2) # --> 765.1
+sd(efficiency_group2)   # --> 271.9581
+
+wmwpowd(
+  n = length(efficiency_group1),
+  m = length(efficiency_group2),
+  distn = "norm(1567.286, 563.2172)",
+  distm = "norm(765.1, 271.9581)",
+  sides = "greater"
+)
+# --> statistical power is sufficient (0.931)
+
 # Conclusion:
 # --> Tests only show a significant p-value (<= 0.01) in the case of
 #     - exercise 3 alone
 #     - exercise 2 and 3 combined
 # in all other cases, the null hypotheses cannot be rejected
+
 
 
 # Create box plot to visually compare duration of versions
