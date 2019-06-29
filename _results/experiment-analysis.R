@@ -282,6 +282,7 @@ dataDuration %>%
   mutate(exercise = factor(exercise, levels = c(1,2,3), labels = c("#1: Process Abstraction", "#2: Service Facade", "#3: Event-Driven Messaging"))) %>% 
   ggplot(aes(x = version, y = duration, fill = exercise)) +
   geom_boxplot(na.rm = TRUE) +
+  theme_classic() +
   facet_grid(exercise ~ .) +
   labs(x = "Group / Version", y = "Duration in sec", fill = "Task Number") +
   theme(
